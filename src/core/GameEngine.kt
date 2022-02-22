@@ -2,8 +2,11 @@ package core
 
 import data.Student
 import ui.GameUi
+import kotlin.system.exitProcess
 
 class GameEngine(val gameUi: GameUi) {
+
+    private lateinit var student: Student
 
     init {
         showUserInput()
@@ -38,8 +41,33 @@ class GameEngine(val gameUi: GameUi) {
             }
         } while (gpa == 0.0f)
 
-        val student = Student(name, age, gpa)
-        println(student)
+        student = Student(name, age, gpa)
+        controlMenu()
+    }
+
+    private fun controlMenu() {
+        when (gameUi.showMenu(student.name)) {
+            1 -> {
+                gameUi.showStudentData(student)
+                controlMenu()
+            }
+            2 -> updateStudentData()
+            3 -> exitProcess(0)
+        }
+    }
+
+    private fun updateStudentData() {
+        gameUi.updateStudentGpa()?.let {
+            if (Validation.validateGpa(it)) {
+                student.gpa = it.toFloat()
+                gameUi.printSuccessUpdateMessage()
+            } else {
+                gameUi.printFailedUpdateMessage("GPA")
+            }
+        } ?: run {
+            gameUi.printFailedUpdateMessage("GPA")
+        }
+        controlMenu()
     }
 
     private fun getNameInput() = gameUi.input("name [3 - 15 characters] (cannot be changed)")
