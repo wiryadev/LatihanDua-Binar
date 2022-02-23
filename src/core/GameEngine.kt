@@ -53,6 +53,7 @@ class GameEngine(val gameUi: GameUi) {
             }
             2 -> updateStudentData()
             3 -> exitProcess(0)
+            else -> controlMenu()
         }
     }
 
